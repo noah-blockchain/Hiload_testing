@@ -1,6 +1,7 @@
 package dao
 
 type Wallet struct {
+	Id         int    `db:"id"`
 	Address    string `db:"address"`
 	PrivateKey string `db:"private_key"`
 	SeedPhrase string `db:"seed_phrase"`

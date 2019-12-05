@@ -158,6 +158,5 @@ Temporary Items
 
 # End of https://www.gitignore.io/api/go,linux,macos,jetbrains
 
-cmd/stress-test/config.go
 db
 go.sum

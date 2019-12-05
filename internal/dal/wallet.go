@@ -44,3 +44,30 @@ func (r repo) CreateWallet(address, seedPhrase, mnemonic, privateKey, amount str
 	}
 	return nil
 }
+
+func (r repo) SelectWallets() ([]dao.Wallet, error) {
+	var wallets []dao.Wallet
+	err := r.db.Select(&wallets, "SELECT * FROM wallets ORDER BY id")
+	if err != nil {
+		return nil, err
+	}
+	return wallets, nil
+}
+
+func (r repo) SelectWalletsInterval(start, end uint64) ([]dao.Wallet, error) {
+	var wallets []dao.Wallet
+	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE id BETWEEN $1 AND $2 ORDER BY id", start, end)
+	if err != nil {
+		return nil, err
+	}
+	return wallets, nil
+}
+
+func (r repo) SelectWalletsAmount(amount uint64) ([]dao.Wallet, error) {
+	var wallets []dao.Wallet
+	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE amount >= $1 ORDER BY id", amount)
+	if err != nil {
+		return nil, err
+	}
+	return wallets, nil
+}
