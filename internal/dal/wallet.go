@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"fmt"
 	"github.com/noah-blockchain/Hiload_testing/internal/dao"
 )
 
@@ -47,7 +48,7 @@ func (r repo) CreateWallet(address, seedPhrase, mnemonic, privateKey, amount str
 
 func (r repo) SelectWallets() ([]dao.Wallet, error) {
 	var wallets []dao.Wallet
-	err := r.db.Select(&wallets, "SELECT * FROM wallets ORDER BY id")
+	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE status=true ORDER BY id")
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func (r repo) SelectWallets() ([]dao.Wallet, error) {
 
 func (r repo) SelectWalletsInterval(start, end uint64) ([]dao.Wallet, error) {
 	var wallets []dao.Wallet
-	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE id BETWEEN $1 AND $2 ORDER BY id", start, end)
+	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE id BETWEEN $1 AND $2 AND status=true ORDER BY id", start, end)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +66,35 @@ func (r repo) SelectWalletsInterval(start, end uint64) ([]dao.Wallet, error) {
 
 func (r repo) SelectWalletsAmount(amount uint64) ([]dao.Wallet, error) {
 	var wallets []dao.Wallet
-	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE amount >= $1 ORDER BY id", amount)
+	err := r.db.Select(&wallets, "SELECT * FROM wallets WHERE amount >= $1 AND status=true ORDER BY id", amount)
 	if err != nil {
 		return nil, err
 	}
 	return wallets, nil
+}
+
+func (r repo) DisableWallet(address string) error {
+	_, err := r.db.Exec("UPDATE wallets SET status=false WHERE address=$1", address)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r repo) GetOneWallet() (*dao.Wallet, error) {
+	for {
+		var wallet dao.Wallet
+
+		err := r.db.Get(&wallet, "SELECT mnemonic, address, status FROM wallets ORDER BY RANDOM() LIMIT 1")
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+
+		if wallet.Status == false {
+			continue
+		}
+
+		return &wallet, nil
+	}
 }

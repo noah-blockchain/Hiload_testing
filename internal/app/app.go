@@ -1,19 +1,21 @@
 package app
 
 import (
+	"github.com/noah-blockchain/Hiload_testing/internal/env"
+	"os"
+
 	"github.com/noah-blockchain/Hiload_testing/internal/dao"
 	"github.com/noah-blockchain/go-sdk/api"
-	"os"
 )
 
 const (
-	walletCount        = 1000
 	countRandomLetters = 10
 	maximumSendNoah    = 26000
 )
 
 var (
-	seedFrom = os.Getenv("SEED_PHRASE")
+	seedFrom    = os.Getenv("SEED_PHRASE")
+	walletCount = env.GetEnvAsInt("WALLET_COUNT", 500000)
 )
 
 type App interface {
@@ -30,6 +32,8 @@ type Repo interface {
 	SelectWallets() ([]dao.Wallet, error)
 	SelectWalletsInterval(start, end uint64) ([]dao.Wallet, error)
 	SelectWalletsAmount(amount uint64) ([]dao.Wallet, error)
+	DisableWallet(address string) error
+	GetOneWallet() (*dao.Wallet, error)
 }
 
 type app struct {
