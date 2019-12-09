@@ -13,7 +13,7 @@ import (
 
 const (
 	countRandomLetters = 10
-	maximumSendNoah    = 10
+	maximumSendNoah    = 25
 )
 
 var (
