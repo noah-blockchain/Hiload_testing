@@ -55,7 +55,7 @@ func (a app) sendNoahFromTo(fromMnemonic string, toAddress string) {
 		return
 	}
 
-	nonce, err := a.nodeAPI.Nonce(walletFrom.Address())
+	nonce, err := a.GetNodeURL().Nonce(walletFrom.Address())
 	v, ok := nonceWallets.Load(walletFrom.Address())
 	if ok {
 		value := v.(uint64)
@@ -65,7 +65,7 @@ func (a app) sendNoahFromTo(fromMnemonic string, toAddress string) {
 				break
 			}
 
-			nonce, err = a.nodeAPI.Nonce(walletFrom.Address())
+			nonce, err = a.GetNodeURL().Nonce(walletFrom.Address())
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -95,7 +95,7 @@ func (a app) sendNoahFromTo(fromMnemonic string, toAddress string) {
 		return
 	}
 
-	res, err := a.nodeAPI.SendTransaction(finishedTx)
+	res, err := a.GetNodeURL().SendTransaction(finishedTx)
 	if err != nil {
 		v, ok := err.(*api.TxError)
 		if ok && v.Code == 412 {

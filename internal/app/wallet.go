@@ -149,7 +149,7 @@ func (a *app) sendMultiListTrx(list []MultiSendItem, payload string) error {
 
 	m := sync.RWMutex{}
 	for {
-		nonce, err := a.nodeAPI.Nonce(walletFrom.Address())
+		nonce, err := a.GetNodeURL().Nonce(walletFrom.Address())
 		if err != nil {
 			return err
 		}
@@ -191,7 +191,7 @@ func (a *app) sendMultiListTrx(list []MultiSendItem, payload string) error {
 		return err
 	}
 
-	_, err = a.nodeAPI.SendTransaction(finishedTx)
+	_, err = a.GetNodeURL().SendTransaction(finishedTx)
 	if err != nil {
 		return err
 	}

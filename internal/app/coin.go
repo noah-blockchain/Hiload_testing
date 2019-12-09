@@ -22,7 +22,7 @@ func (a app) createTokenTrx(name string) error {
 			continue
 		}
 
-		nonce, err := a.nodeAPI.Nonce(walletFrom.Address())
+		nonce, err := a.GetNodeURL().Nonce(walletFrom.Address())
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -59,7 +59,7 @@ func (a app) createTokenTrx(name string) error {
 	for _, trx := range trxs {
 		//go func(signTrx transaction.SignedTransaction) {
 		fmt.Println("START TRX")
-		res, err := a.nodeAPI.SendTransaction(trx)
+		res, err := a.GetNodeURL().SendTransaction(trx)
 		if err != nil {
 			fmt.Println(err)
 			return err

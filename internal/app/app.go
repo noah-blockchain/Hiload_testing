@@ -1,8 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"github.com/noah-blockchain/Hiload_testing/internal/env"
+	"math/rand"
 	"os"
+	"strings"
 
 	"github.com/noah-blockchain/Hiload_testing/internal/dao"
 	"github.com/noah-blockchain/go-sdk/api"
@@ -10,7 +13,7 @@ import (
 
 const (
 	countRandomLetters = 10
-	maximumSendNoah    = 26000
+	maximumSendNoah    = 10
 )
 
 var (
@@ -37,17 +40,29 @@ type Repo interface {
 }
 
 type app struct {
-	repo    Repo
-	rl      RateLimiter
-	nodeAPI *api.Api
+	repo     Repo
+	rl       RateLimiter
+	nodeAPIs []*api.Api
 }
 
 func New(repo Repo, rl RateLimiter) App {
+	apis := strings.Split(os.Getenv("NODE_API_URLS"), ",")
+
+	nodeAPIs := make([]*api.Api, len(apis))
+	for i, a := range apis {
+		nodeAPIs[i] = api.NewApi(a)
+		fmt.Println("Node", i, "URL", a)
+	}
+
 	a := &app{
-		repo:    repo,
-		rl:      rl,
-		nodeAPI: api.NewApi(os.Getenv("NODE_API_URL")),
+		repo:     repo,
+		rl:       rl,
+		nodeAPIs: nodeAPIs,
 	}
 
 	return a
+}
+
+func (a app) GetNodeURL() *api.Api {
+	return a.nodeAPIs[rand.Int31n(int32(len(a.nodeAPIs)))]
 }
