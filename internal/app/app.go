@@ -64,5 +64,5 @@ func New(repo Repo, rl RateLimiter) App {
 }
 
 func (a app) GetNodeURL() *api.Api {
-	return a.nodeAPIs[rand.Int31n(int32(len(a.nodeAPIs)))]
+	return a.nodeAPIs[rand.Intn(len(a.nodeAPIs))]
 }
