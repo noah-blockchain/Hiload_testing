@@ -40,7 +40,10 @@ func openAndCreateDB() (*sqlx.DB, error) {
 		return nil, err
 	}
 	statement, _ := db.Prepare(SqlCommand)
-	_, _ = statement.Exec()
+	_, err = statement.Exec()
+	if err != nil {
+		return nil, err
+	}
 
 	return sqlx.NewDb(db, "sqlite3"), nil
 }
