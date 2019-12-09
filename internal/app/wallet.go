@@ -30,7 +30,6 @@ func (a *app) CreateWallet(wallet Wallet) error {
 
 func (a *app) CreateWallets() error {
 	var mustBeCreated = walletCount
-	i := 0
 	for {
 		count := 0
 		if mustBeCreated <= 100 {
@@ -58,9 +57,7 @@ func (a *app) CreateWallets() error {
 		wg.Wait()
 
 		multiSendList := make([]MultiSendItem, count)
-		s := i * count
-		e := s + count
-		for i, w := range wallets[s:e] {
+		for i, w := range wallets[0:100] {
 			fmt.Println(fmt.Sprintf("Send %d NOAH to %s", maximumSendNoah, w.Address))
 			valueQnoah := utils.NoahToQNoah(big.NewInt(maximumSendNoah))
 			multiSendList[i] = MultiSendItem{
@@ -76,7 +73,6 @@ func (a *app) CreateWallets() error {
 			continue
 		}
 
-		i++
 		if mustBeCreated == 0 {
 			break
 		}
@@ -166,6 +162,9 @@ func (a *app) sendMultiListTrx(list []MultiSendItem, payload string) error {
 
 	tx := transaction.NewMultisendData()
 	for _, d := range list {
+		if len(d.To) != 45 {
+			continue
+		}
 		tx.AddItem(
 			*transaction.NewMultisendDataItem().
 				SetCoin(d.Coin).
@@ -197,6 +196,10 @@ func (a *app) sendMultiListTrx(list []MultiSendItem, payload string) error {
 	}
 
 	for _, d := range list {
+		if len(d.To) != 45 {
+			continue
+		}
+
 		err = a.repo.CreateWallet(
 			d.wallet.Address,
 			d.wallet.SeedPhrase,
